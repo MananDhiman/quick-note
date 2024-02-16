@@ -1,6 +1,7 @@
 plugins {
   id("com.android.application")
   id("org.jetbrains.kotlin.android")
+  id("kotlin-kapt")
 }
 
 android {
@@ -12,7 +13,7 @@ android {
     minSdk = 21
     targetSdk = 34
     versionCode = 1
-    versionName = "1.0"
+    versionName = "0.1.0"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     vectorDrawables {
@@ -63,4 +64,13 @@ dependencies {
   androidTestImplementation("androidx.compose.ui:ui-test-junit4")
   debugImplementation("androidx.compose.ui:ui-tooling")
   debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+  // ROOM database dependency
+  val roomVersion = "2.6.1"
+  implementation("androidx.room:room-runtime:$roomVersion")
+  kapt("androidx.room:room-compiler:$roomVersion")
+
+  // jetpack compose navigation dependency
+  implementation("androidx.navigation:navigation-compose:2.7.6")
+
 }
