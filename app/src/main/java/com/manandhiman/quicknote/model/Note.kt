@@ -10,9 +10,13 @@ data class Note(
   @ColumnInfo(name="note_id")
   val id: Int = 0,
   @ColumnInfo(name="note_title")
-  val title: String = "New Note",
+  val title: String = "New Note Title",
   @ColumnInfo(name="note_content")
-  val note: String = "Enter Note Here"
+  val content: String = "Note the details here...",
+  @ColumnInfo(name="note_created_at")
+  val createdAt: Long = System.currentTimeMillis(),
+  @ColumnInfo(name="note_updated_at")
+  val updatedAt: Long = System.currentTimeMillis(),
 )
 
 val note = Note(0, "This is title", "This is body")

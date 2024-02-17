@@ -20,11 +20,18 @@ class MainViewModel(): ViewModel() {
   }
 
   fun updateNote(note: Note) {
-    noteDao.updateNote(note.id, note.title, note.note)
+    noteDao.updateNote(note.id, note.title, note.content, System.currentTimeMillis())
+    this._notes.value = noteDao.getAllNotes()
   }
 
   fun addNote(note: Note) {
     noteDao.createNewNote(note)
+    this._notes.value = noteDao.getAllNotes()
+  }
+
+  fun deleteNote(note: Note) {
+    noteDao.deleteNote(note)
+    this._notes.value = noteDao.getAllNotes()
   }
 
 }

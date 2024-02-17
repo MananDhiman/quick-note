@@ -18,8 +18,8 @@ interface NoteDao {
   fun createNewNote(note: Note)
 
   // manual update query to prevent conflict with create new note
-  @Query("UPDATE notes SET note_content = :newBody, note_title=:newTitle  WHERE note_id=:id")
-  fun updateNote(id: Int, newTitle: String, newBody: String)
+  @Query("UPDATE notes SET note_content = :newBody, note_title=:newTitle, note_updated_at=:updatedAt   WHERE note_id=:id")
+  fun updateNote(id: Int, newTitle: String, newBody: String, updatedAt: Long)
 
   @Delete
   fun deleteNote(note: Note)
