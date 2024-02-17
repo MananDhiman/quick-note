@@ -107,7 +107,7 @@ fun PostUI(note: Note, index: Int, navController: NavHostController, deleteNote:
   }
 
   if(deleteNoteConfirmDialog.value) deleteNotDialog(deleteNoteConfirmDialog, note, deleteNote)
-  
+
 }
 
 @Composable
