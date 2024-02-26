@@ -1,7 +1,6 @@
 plugins {
   id("com.android.application")
   id("org.jetbrains.kotlin.android")
-  id("kotlin-kapt")
 }
 
 android {
@@ -23,8 +22,9 @@ android {
 
   buildTypes {
     release {
-      isMinifyEnabled = false
+      isMinifyEnabled = true
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+      signingConfig = signingConfigs.getByName("debug")
     }
   }
   compileOptions {
@@ -64,11 +64,6 @@ dependencies {
   androidTestImplementation("androidx.compose.ui:ui-test-junit4")
   debugImplementation("androidx.compose.ui:ui-tooling")
   debugImplementation("androidx.compose.ui:ui-test-manifest")
-
-  // ROOM database dependency
-  val roomVersion = "2.6.1"
-  implementation("androidx.room:room-runtime:$roomVersion")
-  kapt("androidx.room:room-compiler:$roomVersion")
 
   // jetpack compose navigation dependency
   implementation("androidx.navigation:navigation-compose:2.7.6")

@@ -13,3 +13,8 @@
 .externalNativeBuild
 .cxx
 local.properties
+app/src/main/res/mipmap-hdpi/.nomedia
+app/src/main/res/mipmap-mdpi/.nomedia
+app/src/main/res/mipmap-xhdpi/.nomedia
+app/src/main/res/mipmap-xxhdpi/.nomedia
+app/src/main/res/mipmap-xxxhdpi/.nomedia

@@ -1,9 +1,13 @@
-package com.manandhiman.quicknote.screen
+package com.manandhiman.quicknote.ui.screen
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,10 +17,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -44,21 +51,14 @@ fun MainScreen(
   ) {
   Scaffold(
     // create new note button
-    floatingActionButton = {
-      Button(
-        onClick = { navController.navigate("note/-1") }, // -1 is index for new note
-        Modifier.size(75.dp),
-        elevation = ButtonDefaults.buttonElevation(
-          defaultElevation = 8.dp,
-          pressedElevation = 2.dp
-        )
-      ) {
-        Icon(imageVector = Icons.Default.Add, contentDescription = "Create New Note")
-      }
-    }
+    floatingActionButton = { FabCreateNote(navController) },
+    topBar = { TopAppBar(navController) }
   ) {
     val x = it
 
+
+//    if(viewModel.notes.value.isEmpty())
+//      Text("No Notes Added. Use the add new (+) button to create a new note.")
 
     if(viewModel.notes.value.isEmpty()) {
       Column(
@@ -88,30 +88,38 @@ fun MainScreen(
   }
 }
 
+@Composable
+private fun FabCreateNote(navController: NavHostController) {
+  Button(
+    onClick = { navController.navigate("note/-1") }, // -1 is index for new note
+    Modifier.size(75.dp),
+    elevation = ButtonDefaults.buttonElevation(
+      defaultElevation = 8.dp,
+      pressedElevation = 2.dp
+    )
+  ) {
+    Icon(imageVector = Icons.Default.Add, contentDescription = "Create New Note")
+  }
+}
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun PostUI(note: Note, index: Int, navController: NavHostController, deleteNote: (Note) -> Unit) {
+private fun PostUI(note: Note, index: Int, navController: NavHostController, deleteNote: (Note) -> Unit) {
 
   val deleteNoteConfirmDialog = remember{ mutableStateOf(false) }
 
-  Column(
-    Modifier
-      .combinedClickable(
-        onClick = { navController.navigate("note/$index") }, // clicking item takes to note detail
-        onLongClick = { deleteNoteConfirmDialog.value = true } // long click for delete
-      )
-  ) {
+  Column(Modifier.clickable { navController.navigate("note/$index") }) {
     Text(text = note.title, fontSize = 24.sp, maxLines = 3, overflow = TextOverflow.Ellipsis)
     Divider()
     Spacer(modifier = Modifier.height(8.dp))
   }
 
-  if(deleteNoteConfirmDialog.value) deleteNotDialog(deleteNoteConfirmDialog, note, deleteNote)
+  if(deleteNoteConfirmDialog.value) DeleteNoteDialog(deleteNoteConfirmDialog, note, deleteNote)
 
 }
 
 @Composable
-private fun deleteNotDialog(
+private fun DeleteNoteDialog(
   deleteNoteConfirmDialog: MutableState<Boolean>,
   note: Note,
   deleteNote: (Note) -> Unit
@@ -142,8 +150,49 @@ private fun deleteNotDialog(
   )
 }
 
+@Composable
+private fun TopAppBar(navController: NavHostController) {
+  val showDropDown = remember { mutableStateOf(false) }
+  Row(
+    Modifier
+      .background(Color.LightGray)
+      .fillMaxWidth()
+      .padding(16.dp),
+    horizontalArrangement = Arrangement.SpaceBetween
+  ) {
+
+    Text(text = "Quick Note")
+
+    Box {
+      Icon(
+        imageVector = Icons.Default.MoreVert,
+        contentDescription = "More Options",
+        modifier = Modifier.clickable { showDropDown.value = true }
+      )
+      DropdownMenu(
+        expanded = showDropDown.value,
+        onDismissRequest = { showDropDown.value = false }
+      ) {
+        DropdownMenuItem(
+          text = {  Text("Manage Notebooks") },
+          onClick = { navController.navigate("notebooks") }
+        )
+
+        Divider()
+        DropdownMenuItem(
+          text = { Text("About") },
+          onClick = { navController.navigate("about") }
+        )
+      }
+    }
+
+  }
+
+}
+
+
 @Preview(showBackground = true)
 @Composable
-fun Prev() {
+private fun Prev() {
   MainScreen(navController = rememberNavController(), viewModel = viewModel())
 }

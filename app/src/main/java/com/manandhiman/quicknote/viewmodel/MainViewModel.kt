@@ -3,35 +3,33 @@ package com.manandhiman.quicknote.viewmodel
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
-import com.manandhiman.quicknote.database.NoteDao
+import com.manandhiman.quicknote.database.DatabaseHandler
 import com.manandhiman.quicknote.model.Note
 
-class MainViewModel(): ViewModel() {
+class MainViewModel(db: DatabaseHandler) : ViewModel() {
 
-  private lateinit var noteDao: NoteDao
+  private val db = db
 
-  private val _notes = mutableStateOf(listOf<Note>())
-  val notes: State<List<Note>> get() = _notes
+  private val _notes: MutableState<List<Note>>
+    get() = mutableStateOf(db.readNotes())
 
-  fun setNoteDao(noteDao: NoteDao) {
-    this.noteDao = noteDao
-    this._notes.value = noteDao.getAllNotes()
-  }
+  val notes: State<List<Note>>
+  get() = _notes
 
   fun updateNote(note: Note) {
-    noteDao.updateNote(note.id, note.title, note.content, System.currentTimeMillis())
-    this._notes.value = noteDao.getAllNotes()
+//    noteDao.updateNote(note.id, note.title, note.content, System.currentTimeMillis())
+//    this._notes.value = noteDao.getAllNotes()
   }
 
   fun addNote(note: Note) {
-    noteDao.createNewNote(note)
-    this._notes.value = noteDao.getAllNotes()
+    db.createNote(note)
   }
 
   fun deleteNote(note: Note) {
-    noteDao.deleteNote(note)
-    this._notes.value = noteDao.getAllNotes()
+//    noteDao.deleteNote(note)
+//    this._notes.value = noteDao.getAllNotes()
   }
 
 }

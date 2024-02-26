@@ -1,4 +1,4 @@
-package com.manandhiman.quicknote.screen
+package com.manandhiman.quicknote.ui.screen
 
 import android.content.Context
 import android.widget.Toast
@@ -53,7 +53,7 @@ fun NoteScreen(navController: NavHostController, viewModel: MainViewModel, index
 
   // if -1, new note, else existing note
   val note = if(index == -1) {
-    Note()
+    Note("","","")
   } else {
     viewModel.notes.value[index]
   }
@@ -119,7 +119,7 @@ fun TopAppBar(
 
     }
     
-    if(openInfoDialog.value) NoteInfoDialog(openInfoDialog, noteBody, note.createdAt, note.updatedAt)
+//    if(openInfoDialog.value) NoteInfoDialog(openInfoDialog, noteBody, note.createdAt, note.updatedAt)
 
   }
 }
@@ -138,7 +138,7 @@ private fun doneNoteAction(
     Toast.makeText(context, "Note Created", Toast.LENGTH_SHORT).show()
     navController.popBackStack()
   } else {
-    viewModel.updateNote(Note(note.id, noteTitle, noteBody))
+//    viewModel.updateNote(Note(note.id, noteTitle, noteBody))
     Toast.makeText(context, "Note Updated", Toast.LENGTH_SHORT).show()
     navController.popBackStack()
   }
