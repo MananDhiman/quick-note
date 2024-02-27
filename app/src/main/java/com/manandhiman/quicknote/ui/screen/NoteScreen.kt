@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,9 +17,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -53,7 +57,7 @@ fun NoteScreen(navController: NavHostController, viewModel: MainViewModel, index
 
   // if -1, new note, else existing note
   val note = if(index == -1) {
-    Note("","","")
+    Note(title = "New Note Title Here...", content = "Note Content Here...")
   } else {
     viewModel.notes.value[index]
   }
@@ -98,6 +102,9 @@ fun TopAppBar(
   navController: NavHostController,
   note: Note
 ) {
+
+  val showDropDown = remember { mutableStateOf(false) }
+
   Row(
     Modifier
       .background(Color.LightGray)
@@ -111,15 +118,39 @@ fun TopAppBar(
 
     Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Go Back", Modifier.clickable { navController.popBackStack() })
     Row {
-      Icon(imageVector = Icons.Default.Info, contentDescription = "Note Information", Modifier.clickable { openInfoDialog.value = true })
+      Box {
+        Icon(
+          imageVector = Icons.Default.MoreVert,
+          contentDescription = "More Options",
+          modifier = Modifier.clickable { showDropDown.value = true }
+        )
+        DropdownMenu(
+          expanded = showDropDown.value,
+          onDismissRequest = { showDropDown.value = false }
+        ) {
+          DropdownMenuItem(
+            text = {  Text("Delete Notebook") },
+            onClick = { viewModel.deleteNote(note) }
+          )
+
+          Divider()
+          DropdownMenuItem(
+            text = { Text("Note Information") },
+            onClick = { openInfoDialog.value = true }
+          )
+        }
+      }
+//      Icon(imageVector = Icons.Default.MoreVert, contentDescription = "Note Information", Modifier.clickable { openInfoDialog.value = true })
       Spacer(modifier = Modifier.width(4.dp))
       Icon(imageVector = Icons.Default.Done, contentDescription = "Save Note", Modifier.clickable {
         doneNoteAction(index, viewModel, noteTitle, noteBody, context, navController, note)
       })
 
     }
+
+
     
-//    if(openInfoDialog.value) NoteInfoDialog(openInfoDialog, noteBody, note.createdAt, note.updatedAt)
+    if(openInfoDialog.value) NoteInfoDialog(openInfoDialog, noteBody, note.createdAt, note.updatedAt)
 
   }
 }
@@ -138,7 +169,7 @@ private fun doneNoteAction(
     Toast.makeText(context, "Note Created", Toast.LENGTH_SHORT).show()
     navController.popBackStack()
   } else {
-//    viewModel.updateNote(Note(note.id, noteTitle, noteBody))
+    viewModel.updateNote(Note(id = note.id, title = noteTitle, content =  noteBody))
     Toast.makeText(context, "Note Updated", Toast.LENGTH_SHORT).show()
     navController.popBackStack()
   }
@@ -148,14 +179,14 @@ private fun doneNoteAction(
 fun NoteInfoDialog(
   openDialog: MutableState<Boolean>,
   noteBody: String,
-  createdAt: Long,
-  updatedAt: Long
+  createdAt: String,
+  updatedAt: String
 ) {
 
   val formattedCreatedAtTime = SimpleDateFormat("dd/MM/yyyy h:mm a")
-    .format(Date(createdAt))
+    .format(Date(createdAt.toLong()))
   val formattedLastUpdatedAtTime = SimpleDateFormat("dd/MM/yyyy h:mm a")
-    .format(Date(updatedAt))
+    .format(Date(updatedAt.toLong()))
 
   AlertDialog(
     onDismissRequest = { openDialog.value = false },
@@ -172,10 +203,5 @@ fun NoteInfoDialog(
         onClick = { openDialog.value = false }
       ) { Text("Ok") }
     },
-//    dismissButton = {
-//      Button(
-//        onClick = { openDialog.value = false }
-//      ) { Text("Dismiss Button") }
-//    }
   )
 }

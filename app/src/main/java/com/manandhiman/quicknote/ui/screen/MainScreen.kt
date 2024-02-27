@@ -48,21 +48,22 @@ import com.manandhiman.quicknote.viewmodel.MainViewModel
 fun MainScreen(
   navController: NavHostController,
   viewModel: MainViewModel,
-  ) {
+) {
   Scaffold(
     // create new note button
     floatingActionButton = { FabCreateNote(navController) },
-    topBar = { TopAppBar(navController) }
+//    topBar = { TopAppBar(navController) }
   ) {
     val x = it
 
+    Spacer(modifier = Modifier.height(x.calculateTopPadding() * 8))
 
-//    if(viewModel.notes.value.isEmpty())
-//      Text("No Notes Added. Use the add new (+) button to create a new note.")
 
     if(viewModel.notes.value.isEmpty()) {
       Column(
-        Modifier.fillMaxSize().padding(32.dp),
+        Modifier
+          .fillMaxSize()
+          .padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
       ) {

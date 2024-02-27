@@ -1,6 +1,7 @@
 package com.manandhiman.quicknote.model
 
 data class Note(
+  val id: String? = null,
   val title: String,
   val content: String,
   val parentNotebook: String? = null,

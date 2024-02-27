@@ -4,7 +4,9 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
 import com.manandhiman.quicknote.model.Note
+import kotlin.math.sqrt
 
 private const val DB_NAME = "db"
 private const val DB_VER = 1
@@ -37,6 +39,31 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DB_NAME, null
     return db.insert(Notes.TABLE_NAME, null, values)
   }
 
+  fun updateNote(note: Note) {
+    val db = this.writableDatabase
+
+    val values = ContentValues().apply {
+      put(Notes.COLUMN_TITLE, note.title)
+      put(Notes.COLUMN_CONTENT, note.content)
+      put(Notes.COLUMN_UPDATED_AT, note.updatedAt)
+    }
+
+// Which row to update, based on the title
+    val selection = "${Notes.COLUMN_ID} = ?"
+
+    val selectionArgs = arrayOf(note.id)
+
+    val count = db.update(
+      Notes.TABLE_NAME,
+      values,
+      selection,
+      selectionArgs
+    )
+
+    Log.d("tag update note count?", count.toString())
+
+  }
+
   fun readNotes(): List<Note> {
     val db = this.readableDatabase
 
@@ -48,6 +75,7 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DB_NAME, null
     if(result.moveToFirst()){
       do{
         list.add(Note(
+          result.getString(0).toString(),
           result.getString(1),
           result.getString(2),
           result.getString(3),
