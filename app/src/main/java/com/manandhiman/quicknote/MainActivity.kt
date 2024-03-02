@@ -12,8 +12,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.manandhiman.quicknote.database.DatabaseHandler
+import com.manandhiman.quicknote.ui.screen.AboutScreen
 import com.manandhiman.quicknote.ui.screen.MainScreen
 import com.manandhiman.quicknote.ui.screen.NoteScreen
+import com.manandhiman.quicknote.ui.screen.NotebooksScreen
 import com.manandhiman.quicknote.ui.theme.QuickNoteTheme
 import com.manandhiman.quicknote.viewmodel.MainViewModel
 
@@ -37,6 +39,12 @@ class MainActivity : ComponentActivity() {
             }
             composable(route = "note/{index}") {
               NoteScreen(navController, viewModel, it.arguments?.getString("index")!!.toInt())
+            }
+            composable(route = "notebooks") {
+              NotebooksScreen(navController, viewModel)
+            }
+            composable(route = "about") {
+              AboutScreen(navController::popBackStack)
             }
           }
 

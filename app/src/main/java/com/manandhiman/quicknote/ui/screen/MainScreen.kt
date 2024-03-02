@@ -3,7 +3,6 @@ package com.manandhiman.quicknote.ui.screen
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,11 +13,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
@@ -28,12 +29,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -52,39 +53,86 @@ fun MainScreen(
   Scaffold(
     // create new note button
     floatingActionButton = { FabCreateNote(navController) },
-//    topBar = { TopAppBar(navController) }
-  ) {
-    val x = it
+    topBar = { TopAppBar(navController) }
+  ) {paddingValues ->
 
-    Spacer(modifier = Modifier.height(x.calculateTopPadding() * 8))
+    Column(
+      Modifier
+        .fillMaxSize()
+        .padding(paddingValues)
+    ) {
+      // Notebooks list on main screen
+      val notebooks = viewModel.notebooks
 
+      if (notebooks.value.isNotEmpty()) {
+        Box(Modifier.padding(8.dp)) {
+          Text(text = "Select Notebook", fontSize = 22.sp)
+        }
 
-    if(viewModel.notes.value.isEmpty()) {
-      Column(
-        Modifier
-          .fillMaxSize()
-          .padding(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-      ) {
-        Text(text = "No Notes Added. Use the add new (+) button to create a new note.",
-          fontSize = 28.sp, lineHeight = 36.sp)
       }
 
-    }
-    else {
-      LazyColumn(
+      LazyRow(
         Modifier
-          .fillMaxSize()
-          .padding(16.dp)
+          .fillMaxWidth()
+          .padding(8.dp)
       ) {
 
-        items(viewModel.notes.value.size) { index ->
-          PostUI(viewModel.notes.value[index], index, navController, viewModel::deleteNote)
+          item {
+
+              Button(
+                onClick = { viewModel.selectedNotebook("") },
+                shape = RoundedCornerShape(4.dp),
+                enabled = viewModel.notebookSelected.value != ""
+              ) {
+                Text(text = "All")
+              }
+
+            Spacer(modifier = Modifier.width(4.dp))
+          }
+
+          items(notebooks.value.size) {
+            Button(
+              onClick = { viewModel.selectedNotebook(notebooks.value[it].name) },
+              enabled = viewModel.notebookSelected.value != notebooks.value[it].name,
+              shape = RoundedCornerShape(4.dp),
+            ) {
+              Text(text = notebooks.value[it].name)
+            }
+            Spacer(modifier = Modifier.width(4.dp))
+          }
+
+      }
+
+      if(viewModel.notes.value.isEmpty()) {
+        Column(
+          Modifier
+            .fillMaxSize()
+            .padding(32.dp),
+          horizontalAlignment = Alignment.CenterHorizontally,
+          verticalArrangement = Arrangement.Center
+        ) {
+          Text(text = "No Notes Added. Use the add new (+) button to create a new note.",
+            fontSize = 28.sp, lineHeight = 36.sp)
+        }
+
+      }
+      else {
+        LazyColumn(
+          Modifier
+            .fillMaxSize()
+            .padding(
+              top = 8.dp,
+              start = 24.dp,
+              end = 24.dp,
+              bottom = 32.dp
+            )
+        ) {
+          items(viewModel.notes.value.size) { index ->
+            PostUI(viewModel.notes.value[index], index, navController)
+          }
         }
       }
     }
-
 
   }
 }
@@ -103,11 +151,8 @@ private fun FabCreateNote(navController: NavHostController) {
   }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun PostUI(note: Note, index: Int, navController: NavHostController, deleteNote: (Note) -> Unit) {
-
-  val deleteNoteConfirmDialog = remember{ mutableStateOf(false) }
+private fun PostUI(note: Note, index: Int, navController: NavHostController) {
 
   Column(Modifier.clickable { navController.navigate("note/$index") }) {
     Text(text = note.title, fontSize = 24.sp, maxLines = 3, overflow = TextOverflow.Ellipsis)
@@ -115,40 +160,6 @@ private fun PostUI(note: Note, index: Int, navController: NavHostController, del
     Spacer(modifier = Modifier.height(8.dp))
   }
 
-  if(deleteNoteConfirmDialog.value) DeleteNoteDialog(deleteNoteConfirmDialog, note, deleteNote)
-
-}
-
-@Composable
-private fun DeleteNoteDialog(
-  deleteNoteConfirmDialog: MutableState<Boolean>,
-  note: Note,
-  deleteNote: (Note) -> Unit
-) {
-  AlertDialog(
-    onDismissRequest = { deleteNoteConfirmDialog.value = false },
-    title = { Text(text = "Delete Note?") },
-    text = {
-      Text(
-        "Are you sure you want to delete note:\n${note.title}",
-        maxLines = 2,
-        overflow = TextOverflow.Ellipsis
-      )
-    },
-    confirmButton = {
-      Button(
-        onClick = { deleteNote(note) },
-        colors = ButtonDefaults.buttonColors(
-          containerColor = Color.Red
-        )
-      ) { Text("Yes, Delete") }
-    },
-    dismissButton = {
-      Button(
-        onClick = { deleteNoteConfirmDialog.value = false }
-      ) { Text("No, don't delete") }
-    }
-  )
 }
 
 @Composable
@@ -162,13 +173,16 @@ private fun TopAppBar(navController: NavHostController) {
     horizontalArrangement = Arrangement.SpaceBetween
   ) {
 
-    Text(text = "Quick Note")
+    Text(text = "Quick Note", fontWeight = FontWeight.Bold, fontSize = 24.sp)
 
     Box {
       Icon(
         imageVector = Icons.Default.MoreVert,
         contentDescription = "More Options",
-        modifier = Modifier.clickable { showDropDown.value = true }
+        modifier = Modifier
+          .clickable { showDropDown.value = true }
+          .size(32.dp),
+
       )
       DropdownMenu(
         expanded = showDropDown.value,
@@ -186,11 +200,8 @@ private fun TopAppBar(navController: NavHostController) {
         )
       }
     }
-
   }
-
 }
-
 
 @Preview(showBackground = true)
 @Composable
