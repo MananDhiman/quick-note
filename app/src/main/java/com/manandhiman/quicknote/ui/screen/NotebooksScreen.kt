@@ -52,7 +52,7 @@ fun NotebooksScreen(
   notebooks: State<List<Notebook>>,
   addNotebook: (String) -> Unit,
   updateNotebook: (Notebook) -> Unit,
-  deleteNotebook: (Notebook) -> Unit,
+  deleteNotebook: (Notebook) -> Int,
   popBackStack: () -> Unit,
 ) {
   Scaffold(
@@ -131,7 +131,7 @@ fun NotebooksScreen(
 fun NotebookEditDialog(
   openDialog: MutableState<Boolean>,
   updateNotebook: (Notebook) -> Unit,
-  deleteNotebook: (Notebook) -> Unit,
+  deleteNotebook: (Notebook) -> Int,
   notebook: Notebook
 ) {
   Dialog(onDismissRequest = { openDialog.value = false }) {
@@ -215,7 +215,7 @@ private fun NotebooksScreenPrev() {
      ),
      {},
      {},
-     {},
+     { 1 },
      {}
    )
 

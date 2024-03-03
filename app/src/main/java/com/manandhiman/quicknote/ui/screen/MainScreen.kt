@@ -122,9 +122,9 @@ fun MainScreen(
             .fillMaxSize()
             .padding(
               top = 8.dp,
-              start = 24.dp,
-              end = 24.dp,
-              bottom = 32.dp
+              start = 12.dp,
+              end = 12.dp,
+//              bottom = 32.dp
             )
         ) {
           items(viewModel.notes.value.size) { index ->

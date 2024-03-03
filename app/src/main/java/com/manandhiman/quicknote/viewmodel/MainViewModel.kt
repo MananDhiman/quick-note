@@ -1,18 +1,12 @@
 package com.manandhiman.quicknote.viewmodel
 
-import android.util.Log
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.manandhiman.quicknote.database.DatabaseHandler
 import com.manandhiman.quicknote.model.Note
 import com.manandhiman.quicknote.model.Notebook
 
 class MainViewModel(private val db: DatabaseHandler) : ViewModel() {
-
-  var count = MutableLiveData<Int>()
 
   val notebookSelected = mutableStateOf("")
 
@@ -45,10 +39,13 @@ class MainViewModel(private val db: DatabaseHandler) : ViewModel() {
     notebooks.value = db.readNotebooks()
   }
 
-  fun deleteNotebook(notebook: Notebook) {
-    db.deleteNotebook(notebook.id!!)
-    notebooks.value = db.readNotebooks()
-    // db.deleteNotesOfNotebook()
+  fun deleteNotebook(notebook: Notebook): Int {
+    val rowsDeleted = db.deleteNotebook(notebook.id)
+    if(rowsDeleted == 1) db.updateParentNotebook(notebook.id, "")
+
+    return rowsDeleted
+//    notebooks.value = db.readNotebooks()
+
   }
 
   fun selectedNotebook(notebook: String) {
@@ -57,8 +54,7 @@ class MainViewModel(private val db: DatabaseHandler) : ViewModel() {
   }
 
   fun assignNotebook(note: Note, notebookIndex: String) {
-    db.setParentNotebookOfNote(notebookIndex, note.id)
-
+    db.setParentNotebookOfNote(notebookIndex, note.id!!)
   }
 
 }

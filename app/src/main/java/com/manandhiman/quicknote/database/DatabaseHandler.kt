@@ -67,11 +67,8 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DB_NAME, null
   fun readNotes(notebook: String): List<Note> {
     val db = this.readableDatabase
 
-    var query = "SELECT notes.id, notes.title, notes.content, notebooks.notebook, notes.created_at, notes.updated_at " +
-        "FROM notes INNER JOIN notebooks"
-
-    if (notebook != "")
-      query += "  ON notes.parent_notebook_id = notebooks.id WHERE notebooks.notebook = '$notebook'"
+    var query = "SELECT * FROM notes ORDER BY ${Notes.COLUMN_UPDATED_AT} DESC"
+    if (notebook != "") query = "SELECT notes.id, notes.title, notes.content, notebooks.notebook, notes.created_at, notes.updated_at FROM notes INNER JOIN notebooks ON notes.parent_notebook_id = notebooks.id WHERE notebooks.notebook = '$notebook' ORDER BY notes.updated_at"
 
     val res = db.rawQuery(query, null)
 
@@ -236,7 +233,7 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DB_NAME, null
      return db.delete(Notebooks.TABLE_NAME, selection, selectionArgs)
   }
 
-  fun setParentNotebookOfNote(notebookId: String, noteId: String?) {
+  fun setParentNotebookOfNote(notebookId: String, noteId: String) {
     val db = this.writableDatabase
 
     val values = ContentValues().apply {
@@ -253,6 +250,26 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DB_NAME, null
       selection,
       selectionArgs
     )
+  }
+
+  fun updateParentNotebook(prevParent: String, newNotebook: String) {
+    val db = this.writableDatabase
+
+    val values = ContentValues().apply {
+      put(Notes.COLUMN_PARENT_NOTEBOOK, newNotebook)
+    }
+
+    val selection = "${Notes.COLUMN_PARENT_NOTEBOOK} = ?"
+
+    val selectionArgs = arrayOf(prevParent)
+
+    val count = db.update(
+      Notes.TABLE_NAME,
+      values,
+      selection,
+      selectionArgs
+    )
+
   }
 
 

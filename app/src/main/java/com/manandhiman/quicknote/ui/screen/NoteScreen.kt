@@ -64,11 +64,15 @@ fun NoteScreenPrev() {
 @Composable
 fun NoteScreen(navController: NavHostController, viewModel: MainViewModel, index: Int) {
 
+  if(index == viewModel.notes.value.size) {
+    navController.navigate("main")
+    return
+  }
+
   // if -1, new note, else existing note
   val note = if(index == -1) {
     Note(title = "New Note Title Here...", content = "Note Content Here...")
   } else {
-
     viewModel.notes.value[index]
   }
 
