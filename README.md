@@ -1,7 +1,17 @@
 # Quick Note
 A simple note taking app for android
 
-# Preview Screenshots
+
+## Demo Video
+
+
+
+https://github.com/MananDhiman/quick-note/assets/64782929/f1141746-9b90-4020-8307-bf2c5e867f28
+
+
+
+
+## Preview Screenshots
 Note Detail Screen
 
 <img src="./images/note.png" height=570px/>
