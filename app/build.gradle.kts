@@ -12,7 +12,7 @@ android {
     minSdk = 21
     targetSdk = 34
     versionCode = 1
-    versionName = "1.2.2"
+    versionName = "1.3.0"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     vectorDrawables {
@@ -24,7 +24,7 @@ android {
     release {
       isMinifyEnabled = true
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-//      signingConfig = signingConfigs.getByName("debug")
+      signingConfig = signingConfigs.getByName("debug")
     }
   }
   compileOptions {
