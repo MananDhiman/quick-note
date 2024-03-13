@@ -71,7 +71,7 @@ fun NoteScreen(navController: NavHostController, viewModel: MainViewModel, index
 
   // if -1, new note, else existing note
   val note = if(index == -1) {
-    Note(title = "New Note Title Here...", content = "Note Content Here...")
+    Note(title = "", content = "")
   } else {
     viewModel.notes.value[index]
   }
@@ -92,7 +92,12 @@ fun NoteScreen(navController: NavHostController, viewModel: MainViewModel, index
 
       ) {
 
-      TextField(value = noteTitle, onValueChange = { title -> noteTitle = title}, modifier = Modifier.fillMaxWidth())
+      TextField(
+        value = noteTitle,
+        onValueChange = { title -> noteTitle = title},
+        modifier = Modifier.fillMaxWidth(),
+        label = { Text(text = "Note Title Here...") }
+      )
 
       Spacer(modifier = Modifier.height(32.dp))
 
@@ -100,6 +105,7 @@ fun NoteScreen(navController: NavHostController, viewModel: MainViewModel, index
         value = noteBody,
         onValueChange = {body -> noteBody = body},
         modifier = Modifier.fillMaxSize(),
+        label = { Text(text = "Note Content Here...") }
       )
     }
   }
@@ -131,16 +137,23 @@ fun TopAppBar(
     val deleteNoteConfirmDialog = remember{ mutableStateOf(false) }
     val assignNotebookDialog = remember { mutableStateOf(false) }
 
-    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Go Back", Modifier.clickable { navController.popBackStack() }.size(32.dp))
+    Icon(
+      imageVector = Icons.Default.ArrowBack, contentDescription = "Go Back",
+      Modifier
+        .clickable { navController.popBackStack() }
+        .size(32.dp)
+    )
+
     Row {
 
       if(index != -1) {
         Box {
-
           Icon(
             imageVector = Icons.Default.MoreVert,
             contentDescription = "More Options",
-            modifier = Modifier.clickable { showDropDown.value = true }.size(32.dp)
+            modifier = Modifier
+              .clickable { showDropDown.value = true }
+              .size(32.dp)
           )
           DropdownMenu(
             expanded = showDropDown.value,
@@ -171,9 +184,14 @@ fun TopAppBar(
       }
 
       Spacer(modifier = Modifier.width(4.dp))
-      Icon(imageVector = Icons.Default.Done, contentDescription = "Save Note", Modifier.clickable {
-        doneNoteAction(index, viewModel, noteTitle, noteBody, context, navController, note)
-      }.size(32.dp))
+
+      Icon(
+        imageVector = Icons.Default.Done,
+        contentDescription = "Save Note",
+        Modifier
+          .clickable { doneNoteAction(index, viewModel, noteTitle, noteBody, context, navController, note) }
+          .size(32.dp)
+      )
     }
 
     if(openInfoDialog.value) NoteInfoDialog(openInfoDialog, noteBody, note.createdAt, note.updatedAt)
@@ -185,7 +203,9 @@ fun TopAppBar(
 
 @Composable
 fun AssignNotebookDialog(openDialog: MutableState<Boolean>, notebooks: List<Notebook>, note: Note, assignNotebook: (Note, String) -> Unit) {
+
   Dialog(onDismissRequest = { openDialog.value = false }) {
+
     Card(
       modifier = Modifier
         .fillMaxWidth()
@@ -199,14 +219,14 @@ fun AssignNotebookDialog(openDialog: MutableState<Boolean>, notebooks: List<Note
           .fillMaxSize()
           .padding(16.dp)
       ) {
-        Row(Modifier.fillMaxWidth()) {
 
+        Row(Modifier.fillMaxWidth()) {
           Text(text = "Choose Notebook to assign note to", fontSize = 24.sp)
         }
+
         Spacer(modifier = Modifier.height(16.dp))
 
-        LazyColumn() {
-
+        LazyColumn {
           item {
             Row(
               Modifier
@@ -238,11 +258,9 @@ fun AssignNotebookDialog(openDialog: MutableState<Boolean>, notebooks: List<Note
               }
               Divider()
             }
-
           }
         }
       }
-
     }
   }
 }
@@ -270,6 +288,12 @@ private fun doneNoteAction(
   navController: NavHostController,
   note: Note
 ) {
+
+  if (noteTitle.isNullOrBlank()) {
+    Toast.makeText(context, "Cannot save note with empty title", Toast.LENGTH_SHORT).show()
+    return
+  }
+
   if (index == -1) {
     viewModel.addNote(Note(title = noteTitle, content = noteBody))
     Toast.makeText(context, "Note Created", Toast.LENGTH_SHORT).show()

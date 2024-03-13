@@ -1,6 +1,5 @@
 package com.manandhiman.quicknote.ui.screen
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +18,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -66,9 +66,8 @@ fun MainScreen(
 
       if (notebooks.value.isNotEmpty()) {
         Box(Modifier.padding(8.dp)) {
-          Text(text = "Select Notebook", fontSize = 22.sp)
+          Text(text = "Select Notebook", fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
         }
-
       }
 
       LazyRow(
@@ -127,6 +126,12 @@ fun MainScreen(
 //              bottom = 32.dp
             )
         ) {
+          
+          item {
+            Text(text = "Notes", fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
+            Spacer(modifier = Modifier.height(4.dp))
+          }
+          
           items(viewModel.notes.value.size) { index ->
             PostUI(viewModel.notes.value[index], index, navController)
           }
@@ -154,8 +159,22 @@ private fun FabCreateNote(navController: NavHostController) {
 @Composable
 private fun PostUI(note: Note, index: Int, navController: NavHostController) {
 
-  Column(Modifier.clickable { navController.navigate("note/$index") }) {
-    Text(text = note.title, fontSize = 24.sp, maxLines = 3, overflow = TextOverflow.Ellipsis)
+  Column(
+    Modifier
+      .clickable { navController.navigate("note/$index") }
+  ) {
+    Row(
+      Modifier
+        .fillMaxWidth()
+//        .background(color = Color(0xEEE,0xEEE,0xEEE, ))
+        ,
+      verticalAlignment = Alignment.CenterVertically,
+
+    ) {
+      Text(text = note.title, fontSize = 24.sp, maxLines = 3, overflow = TextOverflow.Ellipsis, modifier = Modifier.fillMaxWidth(0.9f))
+      Icon(imageVector = Icons.Default.KeyboardArrowRight, contentDescription = "Open Note")
+    }
+
     Divider()
     Spacer(modifier = Modifier.height(8.dp))
   }

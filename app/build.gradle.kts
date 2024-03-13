@@ -68,4 +68,8 @@ dependencies {
   // jetpack compose navigation dependency
   implementation("androidx.navigation:navigation-compose:2.7.6")
 
+  // coroutine
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+
 }
