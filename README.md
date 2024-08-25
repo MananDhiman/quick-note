@@ -4,12 +4,7 @@ A simple note taking app for android
 
 ## Demo Video
 
-
-
-https://github.com/MananDhiman/quick-note/assets/64782929/f1141746-9b90-4020-8307-bf2c5e867f28
-
-
-
+https://github.com/user-attachments/assets/4e8816b1-c041-48ae-a8f7-3b9cafa94f22
 
 ## Preview Screenshots
 Note Detail Screen
